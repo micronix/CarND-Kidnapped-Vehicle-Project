@@ -50,11 +50,11 @@ public:
 	// Destructor
 	~ParticleFilter() {}
 
-	void PrintState();
+	//void PrintState();
 
-	std::vector<Map::single_landmark_s> nearbyLandmarks(Map map, double sensor_range, double x, double y);
+	//std::vector<Map::single_landmark_s> nearbyLandmarks(Map map, double sensor_range, double x, double y);
 
-	std::vector<LandmarkObs> transformedObservations(std::vector<LandmarkObs> observations, double x, double y, double theta);
+	//std::vector<LandmarkObs> transformedObservations(std::vector<LandmarkObs> observations, double x, double y, double theta);
 
 	/**
 	 * init Initializes particle filter by initializing particles to Gaussian

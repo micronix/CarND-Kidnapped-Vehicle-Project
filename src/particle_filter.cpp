@@ -54,6 +54,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 
 }
 
+/*
 void ParticleFilter::PrintState(){
 	cout << "particles: " << endl;
 	for(auto& particle : particles){
@@ -64,7 +65,7 @@ void ParticleFilter::PrintState(){
 	for(int i = 0; i < num_particles; i++){
 		cout << weights[i] << endl;
 	}
-}
+}*/
 
 
 void ParticleFilter::prediction(double delta_t, double std_pos[], double velocity, double yaw_rate) {
@@ -110,6 +111,7 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::ve
 
 }
 
+/*
 std::vector<Map::single_landmark_s> ParticleFilter::nearbyLandmarks(Map map, double sensor_range, double x, double y){
 	std::vector<Map::single_landmark_s> landmarks;
 	for(auto& landmark : map.landmark_list){
@@ -118,9 +120,9 @@ std::vector<Map::single_landmark_s> ParticleFilter::nearbyLandmarks(Map map, dou
 		}
 	}
 	return landmarks;
-}
+}*/
 
-std::vector<LandmarkObs> ParticleFilter::transformedObservations(std::vector<LandmarkObs> observations, double x, double y, double theta){
+/*std::vector<LandmarkObs> ParticleFilter::transformedObservations(std::vector<LandmarkObs> observations, double x, double y, double theta){
 	std::vector<LandmarkObs> tobservations(observations.size());
 	//cout << "transforming: " << endl;
 	for(int i = 0; i < observations.size(); i++){
@@ -129,7 +131,7 @@ std::vector<LandmarkObs> ParticleFilter::transformedObservations(std::vector<Lan
 		//cout << observations[i].x << " -> " << tobservations[i].x << endl;
 	}
 	return tobservations;
-}
+}*/
 
 void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 		std::vector<LandmarkObs> observations, Map map_landmarks) {
@@ -149,12 +151,27 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
 	for(auto& particle : particles){
 		//cout << "particle: " << particle.x << "," << particle.y << "," << particle.theta << " sensor_range: " << sensor_range << endl;
+		double x = particle.x;
+		double y = particle.y;
+		double theta = particle.theta;
 
 		// select only landmarks within sensor range
-		std::vector<Map::single_landmark_s> landmarks = nearbyLandmarks(map_landmarks, sensor_range, particle.x, particle.y);
+		std::vector<Map::single_landmark_s> landmarks;
+		for(auto& landmark : map_landmarks.landmark_list){
+			if (landmark.x_f > x - sensor_range && landmark.x_f < x + sensor_range && landmark.y_f > y - sensor_range && landmark.y_f < y + sensor_range){
+				landmarks.push_back(landmark);
+			}
+		}
 
 		// transform observations to coordinates of particle
-		std::vector<LandmarkObs> tobservations = transformedObservations(observations, particle.x, particle.y, particle.theta);
+		//std::vector<LandmarkObs> tobservations = transformedObservations(observations, particle.x, particle.y, particle.theta);
+		std::vector<LandmarkObs> tobservations(observations.size());
+		//cout << "transforming: " << endl;
+		for(int i = 0; i < observations.size(); i++){
+			tobservations[i].x = x + observations[i].x * cos(theta) - observations[i].y * sin(theta);
+			tobservations[i].y = y + observations[i].x * sin(theta) + observations[i].y * cos(theta);
+			//cout << observations[i].x << " -> " << tobservations[i].x << endl;
+		}
 
 		/*cout << " observations: " << endl;
 		for(auto& observation : observations){
